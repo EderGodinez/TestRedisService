@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Hx5cxd45gMg=",
+  "dgSpecHash": "VGZk3rw9dz4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Eder Godinez\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+  "projectFilePath": "C:\\Users\\Eder Godinez\\Desktop\\TestRedisService\\Test\\WebApplication1\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Eder Godinez\\.nuget\\packages\\memorypack\\1.21.1\\memorypack.1.21.1.nupkg.sha512",
     "C:\\Users\\Eder Godinez\\.nuget\\packages\\memorypack.core\\1.21.1\\memorypack.core.1.21.1.nupkg.sha512",

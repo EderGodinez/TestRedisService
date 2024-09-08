@@ -1492,11 +1492,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Eder Godinez\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+      "projectUniqueName": "C:\\Users\\Eder Godinez\\Desktop\\TestRedisService\\Test\\WebApplication1\\WebApplication1.csproj",
       "projectName": "WebApplication1",
-      "projectPath": "C:\\Users\\Eder Godinez\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+      "projectPath": "C:\\Users\\Eder Godinez\\Desktop\\TestRedisService\\Test\\WebApplication1\\WebApplication1.csproj",
       "packagesPath": "C:\\Users\\Eder Godinez\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Eder Godinez\\Desktop\\WebApplication1\\WebApplication1\\obj\\",
+      "outputPath": "C:\\Users\\Eder Godinez\\Desktop\\TestRedisService\\Test\\WebApplication1\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Eder Godinez\\AppData\\Roaming\\NuGet\\NuGet.Config",

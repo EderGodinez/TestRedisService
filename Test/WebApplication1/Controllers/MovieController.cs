@@ -1,22 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Services.Todo_s;
-using WebApplication1.Services.Todo_s.Interfaces;
 
 namespace WebApplication1.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TodoController : ControllerBase
+    public class MovieController : ControllerBase
     {
         private readonly ITodoService _todoService;
 
-        public TodoController(ITodoService todoService)
+        public MovieController(ITodoService todoService)
         {
             _todoService = todoService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTodos()
+        public async Task<IActionResult> GetMovies()
         {
             try
             {

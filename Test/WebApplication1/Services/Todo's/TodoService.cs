@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -10,6 +11,7 @@ namespace WebApplication1.Services.Todo_s
     {
         private readonly IHttpClientFactory _httpClient;
         private readonly IDistributedCache _cache;
+        private readonly MemoryCache _cacheMemory;
         private readonly ILogger<TodoService> _logger;
 
         public TodoService(IHttpClientFactory httpClient, IDistributedCache cache, ILogger<TodoService> logger)
@@ -17,38 +19,59 @@ namespace WebApplication1.Services.Todo_s
             _httpClient = httpClient;
             _cache = cache;
             _logger = logger;
+            _cacheMemory = new MemoryCache(new MemoryCacheOptions());
         }
 
         public async Task<(DTOMovie Todos, TimeSpan ExecutionTime)> Get()
         {
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             string cacheKey = "MoviesList";
             DTOMovie listMovies;
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            
 
             try
             {
-                var redisMoviesInfo = await _cache.GetAsync(cacheKey);
-
-                if (redisMoviesInfo != null)
+                //Se verifica si el cache en memoria tiene el valor
+                if (_cacheMemory.TryGetValue(cacheKey, out byte[] cachedData))
                 {
-                    byte[] decompressedBirds = Decompress(redisMoviesInfo);
-                    listMovies = JsonSerializer.Deserialize<DTOMovie>(decompressedBirds);
+                    byte[] decompressedMovies = Decompress(cachedData);
+                    listMovies = JsonSerializer.Deserialize<DTOMovie>(decompressedMovies);
+                    _logger.LogInformation("Data retrieved from cache Memory");
                 }
-                else
+                else 
                 {
-                    listMovies = await FetchMoviesFromApi();
-
-                    if (listMovies != null)
+                    //Se verifica si el cache en redis tiene el valor
+                    var redisMoviesInfo = await _cache.GetAsync(cacheKey);
+                    if (redisMoviesInfo != null)
                     {
-                        byte[] serializedBirds = JsonSerializer.SerializeToUtf8Bytes(listMovies);
-                        byte[] compressedBirds = Compress(serializedBirds);
-                        var options = new DistributedCacheEntryOptions()
-                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(60))
-                            .SetSlidingExpiration(TimeSpan.FromSeconds(60));
-                        await _cache.SetAsync(cacheKey, compressedBirds, options);
+                        byte[] decompressedMovies = Decompress(redisMoviesInfo);
+                        listMovies = JsonSerializer.Deserialize<DTOMovie>(decompressedMovies);
+                        _logger.LogInformation("Data retrieved from redis cache");
+
+                    }
+                    else
+                    {
+                        //Si no se encuentra en cache, se obtiene de la API
+                        listMovies = await FetchMoviesFromApi();
+                        _logger.LogInformation("Data retrieved from API");
+
+                        if (listMovies != null)
+                        {
+                            byte[] serializedMovies = JsonSerializer.SerializeToUtf8Bytes(listMovies);
+                            byte[] compressedMovies = Compress(serializedMovies);
+                            //CONFIGURACION DE CACHE EN REDIS
+                            var options = new DistributedCacheEntryOptions()
+                                .SetAbsoluteExpiration(TimeSpan.FromSeconds(60))
+                                .SetSlidingExpiration(TimeSpan.FromSeconds(60));
+                            ///CONFIGURACION DE CACHE EN MEMORIA
+                            var cacheMemoryOptions = new MemoryCacheEntryOptions()
+                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(10))
+                            .SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                            await _cache.SetAsync(cacheKey, compressedMovies, options);
+                            _cacheMemory.Set(cacheKey, compressedMovies, cacheMemoryOptions);
+                        }
                     }
                 }
-
                 stopwatch.Stop();
                 return (listMovies ?? CreateDefaultDTOMovie(), stopwatch.Elapsed);
             }
@@ -77,7 +100,6 @@ namespace WebApplication1.Services.Todo_s
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation($"Respuesta API: {content}");
 
                 try
                 {
@@ -99,7 +121,6 @@ namespace WebApplication1.Services.Todo_s
                 catch (JsonException ex)
                 {
                     _logger.LogError($"Error al deserializar JSON: {ex.Message}");
-                    _logger.LogError($"JSON problemático: {content}");
                     return CreateDefaultDTOMovie();
                 }
             }

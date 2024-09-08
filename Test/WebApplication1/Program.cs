@@ -22,7 +22,7 @@ namespace WebApplication1
             //    client.BaseAddress = new Uri("https://dummyjson.com/");
             //});
 
-            builder.Services.AddScoped<ITodoService, TodoService>();
+            builder.Services.AddSingleton<ITodoService, TodoService>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
