@@ -14,14 +14,8 @@ namespace WebApplication1
             builder.Services.AddHttpClient();
             builder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "localhost:6379";
+                options.Configuration = "redis:6379";
             });
-
-            //builder.Services.AddHttpClient<ITodoService, TodoService>(client =>
-            //{
-            //    client.BaseAddress = new Uri("https://dummyjson.com/");
-            //});
-
             builder.Services.AddSingleton<ITodoService, TodoService>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

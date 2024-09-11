@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  webapp:
+    image: webapplication1:dev
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

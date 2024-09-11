@@ -27,8 +27,7 @@ namespace WebApplication1.Services.Todo_s
             string cacheKey = "MoviesList";
             DTOMovie listMovies;
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            
-
+            ///CACHE HIBRIDA EN MEMORIA Y REDIS
             try
             {
                 //Se verifica si el cache en memoria tiene el valor
@@ -74,6 +73,7 @@ namespace WebApplication1.Services.Todo_s
                 }
                 stopwatch.Stop();
                 return (listMovies ?? CreateDefaultDTOMovie(), stopwatch.Elapsed);
+
             }
             catch (HttpRequestException ex)
             {
